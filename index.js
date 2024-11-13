@@ -20,7 +20,9 @@ app.use(express.json());
 app.use("/api/contact", limiter);
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_APP_PASSWORD,
@@ -28,6 +30,9 @@ const transporter = nodemailer.createTransport({
 });
 
 transporter.verify(function (error, success) {
+  if (success) {
+    console.log("SMTP connection verified successfully");
+  }
   if (error) {
     console.log("Transporter verification error:", error);
   } else {
