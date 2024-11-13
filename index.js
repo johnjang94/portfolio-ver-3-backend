@@ -7,13 +7,13 @@ require("dotenv").config();
 const app = express();
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
+  windowMs: 60 * 60 * 1000,
+  max: 50,
 });
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: "*",
   })
 );
 app.use(express.json());
