@@ -11,7 +11,6 @@ const limiter = rateLimit({
   max: 5,
 });
 
-// Middleware
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -23,12 +22,12 @@ app.use("/api/contact", limiter);
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // use SSL
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_APP_PASSWORD,
   },
-  debug: true, // Enable debug logging
+  debug: true,
 });
 
 transporter.verify(function (error, success) {
@@ -75,10 +74,8 @@ app.post("/api/contact", validateInput, async (req, res) => {
   const { name, email, inquiry, message } = req.body;
 
   try {
-    // Log the email configuration
     console.log("Attempting to send email with config:", {
       user: process.env.EMAIL_USER,
-      // Don't log the actual password, just its length
       passwordLength: process.env.EMAIL_APP_PASSWORD?.length,
     });
 
@@ -98,7 +95,6 @@ app.post("/api/contact", validateInput, async (req, res) => {
 
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
-    // Log the full error details
     console.error("Detailed error:", {
       message: error.message,
       code: error.code,

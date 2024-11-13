@@ -1,7 +1,6 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-// First, log the configuration (with password length only for security)
 console.log("Config:", {
   email: process.env.EMAIL_USER,
   passwordLength: process.env.EMAIL_APP_PASSWORD?.length,
@@ -19,7 +18,6 @@ const transporter = nodemailer.createTransport({
 
 async function testEmail() {
   try {
-    // Verify connection configuration
     await transporter.verify();
     console.log("Verification successful, attempting to send email...");
 
