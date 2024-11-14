@@ -92,6 +92,21 @@ app.post("/api/contact", validateInput, async (req, res) => {
       `,
     });
 
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Inquiry Received !",
+      html: `
+        <p>Dear ${name},</p>
+        <p>Thank you for reaching out to me regarding "${topic}".</p>
+        <p>This email is to confirm the receipt of your message and I will get back to you as soon as possible.</p>
+        <p>Please note that this is an automated response. Do not reply to this email.</p>
+        <br>
+        <p>Best regards,</p>
+        <p>John Jang</p>
+      `,
+    });
+
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
     console.error("Detailed error:", {
