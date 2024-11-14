@@ -58,9 +58,9 @@ async function testEmail() {
 testEmail();
 
 const validateInput = (req, res, next) => {
-  const { name, email, topic, message } = req.body;
+  const { name, email, inquiry, message } = req.body;
 
-  if (!name || !email || !topic || !message) {
+  if (!name || !email || !inquiry || !message) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -73,7 +73,7 @@ const validateInput = (req, res, next) => {
 };
 
 app.post("/api/contact", validateInput, async (req, res) => {
-  const { name, email, topic, message } = req.body;
+  const { name, email, inquiry, message } = req.body;
 
   try {
     console.log("Starting email process...");
@@ -84,7 +84,7 @@ app.post("/api/contact", validateInput, async (req, res) => {
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER,
       replyTo: email,
-      subject: `${topic}`,
+      subject: `${inquiry}`,
       html: `
         <p>${name} has sent me a message via my UX Design portfolio.</p>
         <p><strong>Message:</strong>${message}</p>
@@ -98,7 +98,7 @@ app.post("/api/contact", validateInput, async (req, res) => {
       subject: "Inquiry Received!",
       html: `
         <p>Dear ${name},</p>
-        <p>Thank you for reaching out to me regarding "${topic}".</p>
+        <p>Thank you for reaching out to me regarding "${inquiry}".</p>
         <p>This email is to confirm the receipt of your message and I will get back to you as soon as possible.</p>
         <p>Please note that this is an automated response. Do not reply to this email.</p>
         <br>
