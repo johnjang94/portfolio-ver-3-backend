@@ -86,8 +86,7 @@ app.post("/api/contact", validateInput, async (req, res) => {
       replyTo: email,
       subject: `${inquiry}`,
       html: `
-        <p>${name} has sent me a message via my UX Design portfolio.</p>
-        <p><strong>Message:</strong>${message}</p>
+        <p>${message}</p>
       `,
     });
     console.log("Admin email sent successfully:", yourEmail.messageId);
