@@ -76,12 +76,11 @@ app.post("/api/contact", validateInput, async (req, res) => {
   const { name, email, topic, message } = req.body;
 
   try {
-    console.log("Attempting to send email with config:", {
-      user: process.env.EMAIL_USER,
-      passwordLength: process.env.EMAIL_APP_PASSWORD?.length,
-    });
+    console.log("Starting email process...");
+    console.log("Sending to admin email:", process.env.EMAIL_USER);
+    console.log("Visitor email:", email);
 
-    await transporter.sendMail({
+    const yourEmail = await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER,
       replyTo: email,
@@ -91,11 +90,12 @@ app.post("/api/contact", validateInput, async (req, res) => {
         <p><strong>Message:</strong>${message}</p>
       `,
     });
+    console.log("Admin email sent successfully:", yourEmail.messageId);
 
-    await transporter.sendMail({
+    const visitorEmail = await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "Inquiry Received !",
+      subject: "Inquiry Received!",
       html: `
         <p>Dear ${name},</p>
         <p>Thank you for reaching out to me regarding "${topic}".</p>
@@ -106,6 +106,7 @@ app.post("/api/contact", validateInput, async (req, res) => {
         <p>John Jang</p>
       `,
     });
+    console.log("Visitor email sent successfully:", visitorEmail.messageId);
 
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
