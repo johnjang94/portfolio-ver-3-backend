@@ -58,9 +58,9 @@ async function testEmail() {
 testEmail();
 
 const validateInput = (req, res, next) => {
-  const { name, email, inquiry, message } = req.body;
+  const { name, email, topic, message } = req.body;
 
-  if (!name || !email || !inquiry || !message) {
+  if (!name || !email || !topic || !message) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -73,7 +73,7 @@ const validateInput = (req, res, next) => {
 };
 
 app.post("/api/contact", validateInput, async (req, res) => {
-  const { name, email, inquiry, message } = req.body;
+  const { name, email, topic, message } = req.body;
 
   try {
     console.log("Attempting to send email with config:", {
@@ -85,13 +85,10 @@ app.post("/api/contact", validateInput, async (req, res) => {
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER,
       replyTo: email,
-      subject: `New Contact Form Submission from ${name}: ${inquiry}`,
+      subject: `${topic}`,
       html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Inquiry:</strong> ${inquiry}</p>
-        <p><strong>Message:</strong> ${message}</p>
+        <p>${name} has sent me a message via my UX Design portfolio.</p>
+        <p><strong>Message:</strong>${message}</p>
       `,
     });
 
