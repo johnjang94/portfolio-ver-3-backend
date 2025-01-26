@@ -73,16 +73,28 @@ const validateInput = (req, res, next) => {
 };
 
 app.post("/api/contact", validateInput, async (req, res) => {
-  const { email, inquiry, message, templateHtml } = req.body;
+  const { email, name, inquiry, message } = req.body;
+
+  const visitorEmailHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; border-radius: 10px; max-width: 600px; margin: auto;">
+      <div style="text-align: center;">
+        <img src="/logo-512.png" alt="Logo" width="50" height="50" />
+      </div>
+      <h2>Hi, ${name}!</h2>
+      <p>Thank you for reaching out to me!</p>
+      <p>This is to confirm that I have received your inquiry regarding <strong>${inquiry}</strong>.</p>
+      <p>I will get back to you within 1-2 business days.</p>
+      <p>Best regards,</p>
+      <p>John</p>
+    </div>
+  `;
 
   try {
     const yourEmail = await transporter.sendMail({
       from: `"Customer Inquiry" <${process.env.EMAIL_USER}>`,
-      to: `"John Jang" <${process.env.EMAIL_USER}`,
+      to: `"John Jang" <${process.env.EMAIL_USER}>`,
       subject: `${inquiry}`,
-      html: `
-        <p>${message}</p>
-      `,
+      html: `<p>${message}</p>`,
     });
     console.log("Admin email sent successfully:", yourEmail.messageId);
 
@@ -90,23 +102,14 @@ app.post("/api/contact", validateInput, async (req, res) => {
       from: `"No-Reply: Confirmation from John Jang" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Thank you for reaching out to me!",
-      html: templateHtml,
+      html: visitorEmailHtml,
     });
     console.log("Visitor email sent successfully:", visitorEmail.messageId);
 
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
-    console.error("Detailed error:", {
-      message: error.message,
-      code: error.code,
-      response: error.response,
-      stack: error.stack,
-    });
-
-    res.status(500).json({
-      error: "Failed to send email",
-      details: error.message,
-    });
+    console.error("Error sending email:", error);
+    res.status(500).json({ error: "Failed to send email" });
   }
 });
 
