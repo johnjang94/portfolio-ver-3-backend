@@ -85,7 +85,7 @@ app.post("/api/contact", validateInput, async (req, res) => {
   const visitorEmailHtml = `
     <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; border-radius: 10px; max-width: 600px; margin: auto;">
       <div style="text-align: center;">
-        <img src="${imageSrc}" alt="Logo" width="50" height="50" />
+        <img src="${imageSrc}" alt="Logo" width="30" height="30" />
       </div>
       <h2>Hi, ${name}!</h2>
       <p>Thank you for reaching out to me!</p>
