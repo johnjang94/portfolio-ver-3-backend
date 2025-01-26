@@ -2,6 +2,9 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const fs = require("fs");
+const path = require("path");
+
 require("dotenv").config();
 
 const app = express();
@@ -75,10 +78,14 @@ const validateInput = (req, res, next) => {
 app.post("/api/contact", validateInput, async (req, res) => {
   const { email, name, inquiry, message } = req.body;
 
+  const imagePath = path.join(__dirname, "logo-512.png");
+  const base64Image = fs.readFileSync(imagePath).toString("base64");
+  const imageSrc = `data:image/png;base64,${base64Image}`;
+
   const visitorEmailHtml = `
     <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; border-radius: 10px; max-width: 600px; margin: auto;">
       <div style="text-align: center;">
-        <img src="/logo-512.png" alt="Logo" width="50" height="50" />
+        <img src="${imageSrc}" alt="Logo" width="50" height="50" />
       </div>
       <h2>Hi, ${name}!</h2>
       <p>Thank you for reaching out to me!</p>
