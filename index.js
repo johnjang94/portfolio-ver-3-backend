@@ -78,21 +78,23 @@ app.post("/api/contact", validateInput, async (req, res) => {
   try {
     const yourEmail = await transporter.sendMail({
       from: `"Customer Inquiry" <${process.env.EMAIL_USER}>`,
-      to: `"John Jang" <${process.env.EMAIL_USER}`,
+      to: `"John Jang" <${process.env.EMAIL_USER}>`,
       subject: `${inquiry}`,
       html: `
         <p>${message}</p>
       `,
     });
-    console.log("Admin email sent successfully:", yourEmail.messageId);
+
+    const templateWithData = templateHtml
+      .replace("[name]", name)
+      .replace("[inquiry]", inquiry);
 
     const visitorEmail = await transporter.sendMail({
       from: `"No-Reply: Confirmation from John Jang" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Thank you for reaching out to me!",
-      html: templateHtml,
+      html: templateWithData,
     });
-    console.log("Visitor email sent successfully:", visitorEmail.messageId);
 
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
