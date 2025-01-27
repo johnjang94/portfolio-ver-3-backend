@@ -5,6 +5,7 @@ const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const chatbotRoutes = require("./routes/chatbot-route");
+const emailRoutes = require("./routes/email-route");
 
 const app = express();
 
@@ -25,6 +26,8 @@ const limiter = rateLimit({
 });
 app.use("/api/chat", limiter);
 app.use("/api/chat", chatbotRoutes);
+
+app.use("/api/contact", emailRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

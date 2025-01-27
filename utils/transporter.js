@@ -17,6 +17,20 @@ transporter.verify((error, success) => {
     console.error("Transporter verification error:", error);
   } else {
     console.log("SMTP connection verified successfully");
+
+    transporter
+      .sendMail({
+        from: `"Automatic Email Configuration Test" <${process.env.EMAIL_USER}>`,
+        to: process.env.EMAIL_USER,
+        subject: "Do Not Reply",
+        text: "This is an automated test email sent during deployment. If you receive this message, it means that you have configured properly.",
+      })
+      .then(() => {
+        console.log("Test email sent successfully");
+      })
+      .catch((err) => {
+        console.error("Error sending auto-test email:", err);
+      });
   }
 });
 
