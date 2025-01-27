@@ -18,7 +18,13 @@ exports.sendEmail = async (req, res) => {
       </div>
       <h2>Hi, ${name}!</h2>
       <p>Thank you for reaching out to me!</p>
-      <p>I will get back to you within 1-2 business days.</p>
+      <p>Here is the message that I have received from you:</p>
+      <h1>Regarding ${inquiry}</h1>
+      <p>Message:</p>
+      <p>${message}</p>
+      <p>This is to confirm the receipt of your inquiry! I will get back to you within 1-2 business days.</p>
+      <p>Best regards,</p>
+      <p>John Jang</p>
     </div>
   `;
 
