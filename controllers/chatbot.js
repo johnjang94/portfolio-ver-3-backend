@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const OPENAI_API = process.env.OPENAI_API;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 export const chat = async (req, res) => {
@@ -16,26 +17,38 @@ export const chat = async (req, res) => {
       await user.save();
     }
 
-    const chatGPTResponse = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+    const chatGPTRequest = {
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful assistant for the website www.johnjang.ca. Only provide information based on this website and its content. Do not reference any other John Jang who is unrelated to this website.",
         },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            {
-              role: "system",
-              content: "You are a helpful assistant for www.johnjang.ca.",
-            },
-            { role: "user", content: message },
-          ],
-        }),
-      }
-    );
+        {
+          role: "user",
+          content: "Tell me about John Jang.",
+        },
+        {
+          role: "assistant",
+          content:
+            "John Jang is a professional developer specializing in web applications, as described on www.johnjang.ca. He focuses on creating modern, user-friendly interfaces and delivering high-quality projects for his clients.",
+        },
+        {
+          role: "user",
+          content: message,
+        },
+      ],
+    };
+
+    const chatGPTResponse = await fetch(`${OPENAI_API}/v1/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify(chatGPTRequest),
+    });
 
     const responseData = await chatGPTResponse.json();
 
@@ -47,7 +60,6 @@ export const chat = async (req, res) => {
 
     res.json({ response: chatGPTMessage });
   } catch (error) {
-    console.error("Error handling chat request:", error);
     res.status(500).json({
       error: "An error occurred while processing your request.",
     });
