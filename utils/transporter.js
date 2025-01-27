@@ -1,6 +1,7 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
-require("dotenv").config();
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -34,4 +35,4 @@ transporter.verify((error, success) => {
   }
 });
 
-module.exports = transporter;
+export default transporter;

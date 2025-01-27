@@ -1,4 +1,4 @@
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
   const { name, email, inquiry, message } = req.body;
 
   if (!name || !email || !inquiry || !message) {

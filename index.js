@@ -1,11 +1,13 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const rateLimit = require("express-rate-limit");
-require("dotenv").config();
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
+import dotenv from "dotenv";
 
-const chatbotRoutes = require("./routes/chatbot-route");
-const emailRoutes = require("./routes/email-route");
+import chatbotRoutes from "./routes/chatbot-route.js";
+import emailRoutes from "./routes/email-route.js";
+
+dotenv.config();
 
 const app = express();
 
