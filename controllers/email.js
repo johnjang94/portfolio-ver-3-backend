@@ -16,15 +16,26 @@ exports.sendEmail = async (req, res) => {
       <div style="text-align: center;">
         <img src="${imageSrc}" alt="Logo" width="30" height="30" />
       </div>
-      <h2>Hi, ${name}!</h2>
-      <p>Thank you for reaching out to me!</p>
-      <p>Here is the message that I have received from you:</p>
-      <h1>Regarding ${inquiry}</h1>
-      <p>Message:</p>
-      <p>${message}</p>
-      <p>This is to confirm the receipt of your inquiry! I will get back to you within 1-2 business days.</p>
-      <p>Best regards,</p>
-      <p>John Jang</p>
+        <div style="width: 100%; max-width: 32rem; margin: 0 auto; margin-top: 1.5rem;">
+    <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Hi, ${name}!</h1>
+    <p style="font-size: 1.125rem; margin-bottom: 1rem;">Thank you for reaching out to me!</p>
+    <p style="font-size: 1.125rem; margin-bottom: 1.5rem;">
+      This email is to confirm the receipt of your inquiry with the following content:
+    </p>
+    <div style="display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.5rem;">
+      <p style="font-size: 1.125rem;">Inquiry:</p>
+      <p style="font-weight: bold;">${inquiry}</p>
+    </div>
+    <div style="margin-bottom: 1.5rem;">
+      <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">Message:</p>
+      <p style="background-color: white; padding: 1.25rem; border-radius: 1rem;">${message}</p>
+    </div>
+    <p style="font-size: 1rem; margin-bottom: 0.5rem;">
+      I will get back to you within 1-2 business days.
+    </p>
+    <p style="font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem;">Best regards,</p>
+    <p>John</p>
+  </div>
     </div>
   `;
 
