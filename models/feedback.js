@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-const FeedbackSchema = new mongoose.Schema(
+const feedbackSchema = new mongoose.Schema(
   {
     userRole: { type: String, required: true },
     otherRole: { type: String, default: "" },
@@ -12,5 +12,4 @@ const FeedbackSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Feedback = mongoose.model("Feedback", FeedbackSchema);
-export default Feedback;
+module.exports = mongoose.model("Feedback", feedbackSchema);
