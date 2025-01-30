@@ -1,13 +1,14 @@
-import fetch from "node-fetch";
-import User from "../models/user.js";
-import dotenv from "dotenv";
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const User = require("../models/user.js");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
 const OPENAI_API = process.env.OPENAI_API;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-export const chat = async (req, res) => {
+exports.chat = async (req, res) => {
   try {
     const { userId, message } = req.body;
 
