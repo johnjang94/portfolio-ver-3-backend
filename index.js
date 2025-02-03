@@ -1,9 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const rateLimit = require("express-rate-limit");
+const rateLimit = (...args) =>
+  import("express-rate-limit").then(({ default: rateLimit }) =>
+    rateLimit(...args)
+  );
 const cron = require("node-cron");
-const fetch = require("node-fetch");
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 require("dotenv").config();
 
 const chatbotRoutes = require("./routes/chatbot-route");
