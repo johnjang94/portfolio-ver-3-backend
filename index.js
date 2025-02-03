@@ -38,22 +38,25 @@ app.use(express.json());
 
   const BACKEND_URL =
     process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3000}`;
-  const lastActivity = { timestamp: Date.now() };
-
-  app.post("/api/chat", (req, res, next) => {
-    lastActivity.timestamp = Date.now();
-    next();
-  });
 
   cron.schedule("*/5 * * * *", async () => {
+    console.log(
+      "[CRON] Starting keep-alive cycle at",
+      new Date().toISOString()
+    );
     try {
-      await fetch(`${BACKEND_URL}/api/health-check`);
+      let healthResponse = await fetch(`${BACKEND_URL}/api/health-check`);
+      console.log(
+        "[CRON] Health-check response status:",
+        healthResponse.status
+      );
 
-      if (Date.now() - lastActivity.timestamp < 12 * 60 * 60 * 1000) {
-        await fetch(`${BACKEND_URL}/api/chat`, { method: "HEAD" });
-      }
+      let chatResponse = await fetch(`${BACKEND_URL}/api/chat`, {
+        method: "HEAD",
+      });
+      console.log("[CRON] Chat ping response status:", chatResponse.status);
 
-      await fetch(`${BACKEND_URL}/api/contact`, {
+      let emailResponse = await fetch(`${BACKEND_URL}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -62,7 +65,10 @@ app.use(express.json());
           warmUp: true,
         }),
       });
-    } catch (error) {}
+      console.log("[CRON] Email ping response status:", emailResponse.status);
+    } catch (error) {
+      console.error("[CRON] Error during keep-alive cycle:", error);
+    }
   });
 
   app.use((err, req, res, next) =>
