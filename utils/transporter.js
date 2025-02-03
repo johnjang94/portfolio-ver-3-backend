@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-
 require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
@@ -12,26 +11,43 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("Transporter verification error:", error);
-  } else {
-    console.log("SMTP connection verified successfully");
+const sendDeploymentTestEmail = async () => {
+  try {
+    await transporter.sendMail({
+      from: `"Automatic Email Configuration Test" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: "Do Not Reply",
+      text: "This is an automated test email sent during deployment.",
+    });
+    console.log("Deployment test email sent successfully.");
+  } catch (error) {
+    console.error("Error sending deployment test email:", error);
+  }
+};
 
-    transporter
-      .sendMail({
-        from: `"Automatic Email Configuration Test" <${process.env.EMAIL_USER}>`,
-        to: process.env.EMAIL_USER,
-        subject: "Do Not Reply",
-        text: "This is an automated test email sent during deployment. If you receive this message, it means that you have configured properly.",
-      })
-      .then(() => {
-        console.log("Test email sent successfully");
-      })
-      .catch((err) => {
-        console.error("Error sending auto-test email:", err);
-      });
+transporter.verify(async (error) => {
+  if (!error) {
+    console.log("SMTP connection verified successfully.");
+    await sendDeploymentTestEmail();
+  } else {
+    console.error("Transporter verification error:", error);
   }
 });
 
-module.exports = transporter;
+const sendEmail = async ({ email, subject, text, warmUp = false }) => {
+  if (warmUp) return { message: "SMTP connection warmed up, email not sent." };
+
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject,
+      text,
+    });
+    return { message: "Email sent successfully." };
+  } catch {
+    return { error: "Failed to send email." };
+  }
+};
+
+module.exports = { transporter, sendEmail };
