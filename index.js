@@ -1,10 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const rateLimit = (...args) =>
-  import("express-rate-limit").then(({ default: rateLimit }) =>
-    rateLimit(...args)
-  );
 const cron = require("node-cron");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -27,48 +23,53 @@ mongoose
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-app.use("/api/chat", rateLimit({ windowMs: 60 * 60 * 1000, max: 50 }));
-app.use("/api/chat", chatbotRoutes);
-app.use("/api/contact", emailRoutes);
-app.use("/api/feedback", feedbackRoutes);
+(async () => {
+  const { default: rateLimit } = await import("express-rate-limit");
+  const chatRateLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 50 });
+  app.use("/api/chat", chatRateLimiter);
 
-app.get("/api/health-check", (req, res) => {
-  res.status(200).json({ status: "OK", timestamp: new Date() });
-});
+  app.use("/api/chat", chatbotRoutes);
+  app.use("/api/contact", emailRoutes);
+  app.use("/api/feedback", feedbackRoutes);
 
-const BACKEND_URL =
-  process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3000}`;
-const lastActivity = { timestamp: Date.now() };
+  app.get("/api/health-check", (req, res) => {
+    res.status(200).json({ status: "OK", timestamp: new Date() });
+  });
 
-app.post("/api/chat", (req, res, next) => {
-  lastActivity.timestamp = Date.now();
-  next();
-});
+  const BACKEND_URL =
+    process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3000}`;
+  const lastActivity = { timestamp: Date.now() };
 
-cron.schedule("*/5 * * * *", async () => {
-  try {
-    await fetch(`${BACKEND_URL}/api/health-check`);
+  app.post("/api/chat", (req, res, next) => {
+    lastActivity.timestamp = Date.now();
+    next();
+  });
 
-    if (Date.now() - lastActivity.timestamp < 12 * 60 * 60 * 1000) {
-      await fetch(`${BACKEND_URL}/api/chat`, { method: "HEAD" });
-    }
+  cron.schedule("*/5 * * * *", async () => {
+    try {
+      await fetch(`${BACKEND_URL}/api/health-check`);
 
-    await fetch(`${BACKEND_URL}/api/contact`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: "warmup@example.com",
-        message: "warm-up",
-        warmUp: true,
-      }),
-    });
-  } catch (error) {}
-});
+      if (Date.now() - lastActivity.timestamp < 12 * 60 * 60 * 1000) {
+        await fetch(`${BACKEND_URL}/api/chat`, { method: "HEAD" });
+      }
 
-app.use((err, req, res, next) =>
-  res.status(500).json({ error: "Something went wrong!" })
-);
-app.use((req, res) => res.status(404).json({ error: "Not Found" }));
+      await fetch(`${BACKEND_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "warmup@example.com",
+          message: "warm-up",
+          warmUp: true,
+        }),
+      });
+    } catch (error) {}
+  });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  app.use((err, req, res, next) =>
+    res.status(500).json({ error: "Something went wrong!" })
+  );
+  app.use((req, res) => res.status(404).json({ error: "Not Found" }));
+
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+})();
