@@ -29,6 +29,10 @@ app.use(express.json());
   const chatRateLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 50 });
   app.use("/api/chat", chatRateLimiter);
 
+  app.head("/api/chat", (req, res) => {
+    res.status(200).end();
+  });
+
   app.use("/api/chat", chatbotRoutes);
   app.use("/api/contact", emailRoutes);
   app.use("/api/feedback", feedbackRoutes);
@@ -52,7 +56,9 @@ app.use(express.json());
         healthResponse.status
       );
 
-      let chatResponse = await fetch(`${BACKEND_URL}/api/chat`);
+      let chatResponse = await fetch(`${BACKEND_URL}/api/chat`, {
+        method: "HEAD",
+      });
       console.log("[CRON] Chat ping response status:", chatResponse.status);
 
       let emailResponse = await fetch(`${BACKEND_URL}/api/contact`, {
