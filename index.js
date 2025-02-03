@@ -34,16 +34,20 @@ app.get("/api/health-check", (req, res) => {
 
 const BACKEND_URL =
   process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3000}`;
+const lastActivity = { timestamp: Date.now() };
+
+app.post("/api/chat", (req, res, next) => {
+  lastActivity.timestamp = Date.now();
+  next();
+});
 
 cron.schedule("*/5 * * * *", async () => {
   try {
     await fetch(`${BACKEND_URL}/api/health-check`);
 
-    await fetch(`${BACKEND_URL}/api/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: "warm-up-test", system: true }),
-    });
+    if (Date.now() - lastActivity.timestamp < 12 * 60 * 60 * 1000) {
+      await fetch(`${BACKEND_URL}/api/chat`, { method: "HEAD" });
+    }
 
     await fetch(`${BACKEND_URL}/api/contact`, {
       method: "POST",
