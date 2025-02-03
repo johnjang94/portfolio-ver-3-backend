@@ -11,6 +11,7 @@ const emailRoutes = require("./routes/email-route");
 const feedbackRoutes = require("./routes/feedback-route");
 
 const app = express();
+app.set("trust proxy", 1);
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -51,9 +52,7 @@ app.use(express.json());
         healthResponse.status
       );
 
-      let chatResponse = await fetch(`${BACKEND_URL}/api/chat`, {
-        method: "HEAD",
-      });
+      let chatResponse = await fetch(`${BACKEND_URL}/api/chat`);
       console.log("[CRON] Chat ping response status:", chatResponse.status);
 
       let emailResponse = await fetch(`${BACKEND_URL}/api/contact`, {
