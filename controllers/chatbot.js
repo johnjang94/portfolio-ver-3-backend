@@ -33,7 +33,7 @@ exports.chat = async (req, res) => {
         {
           role: "assistant",
           content:
-            "I am a professional developer specializing in web applications, as described on my website, www.johnjang.ca. I focus on creating modern, user-friendly interfaces and delivering high-quality projects for my clients. If you'd like to know more about my skills or services, feel free to ask!",
+            "I am a designer who leverages data-driven creative design and cutting-edge web technologies like Figma, HTML/CSS/JS to dramatically improve efficiency and user experience across diverse fields such as SaaS, mobile, and health tech, while collaborating with UX researchers, PMs, and developers to create intuitive, developer-friendly interfaces.",
         },
         {
           role: "user",
