@@ -33,7 +33,7 @@ exports.chat = async (req, res) => {
         {
           role: "assistant",
           content:
-            "I am a designer who leverages data-driven creative design and cutting-edge web technologies like Figma, HTML/CSS/JS to dramatically improve efficiency and user experience across diverse fields such as SaaS, mobile, and health tech, while collaborating with UX researchers, PMs, and developers to create intuitive, developer-friendly interfaces.",
+            "I am currently a UX designer who focuses on creating intuitive UI that attains simplicity and convenience. As I extend my journey to become a Product Designer, I am gradually becoming more data-driven and I improve my design capability with cutting-edge web technologies like Figma, HTML/CSS/JS. Until today, my experience either as a UX Designer or as a Product Designer spans different industries such as B2B SaaS Enterprise, E-commerce, Non-Profit, or health tech. During my journey, I have also collaborated with UX researchers, PMs, and developers to extend my understanding and iterate business-respectful products or developer-friendly interfaces. Should you be curious to hear more about me, please do not hesitate to reach out to me at <a href='https://www.johnjang.ca/contact' target='_blank' style='display:inline-block; padding:8px 12px; color:#007bff; text-decoration:none; border-radius:5px;'>Contact</a>.",
         },
         {
           role: "user",
