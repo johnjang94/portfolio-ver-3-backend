@@ -28,7 +28,7 @@ exports.chat = async (req, res) => {
         },
         {
           role: "user",
-          content: "What do you do?",
+          content: message,
         },
         {
           role: "assistant",
