@@ -1,6 +1,6 @@
 const express = require("express");
 const Feedback = require("../models/feedback");
-const transporter = require("../utils/transporter");
+const { transporter } = require("../utils/transporter");
 const router = express.Router();
 
 const submitFeedback = async (req, res) => {
