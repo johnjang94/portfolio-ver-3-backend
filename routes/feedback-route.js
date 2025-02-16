@@ -103,6 +103,7 @@ ${userEmail ? `📧 User Email: ${userEmail}\n` : ""}
 
     confirmationEmailHtml += `</div>`;
 
+    // 이름과 이메일이 입력된 경우에만 확인 이메일 전송
     if (userEmail) {
       await transporter.sendMail({
         from: `"Portfolio Feedback" <${process.env.EMAIL_USER}>`,

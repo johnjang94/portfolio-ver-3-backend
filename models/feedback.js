@@ -12,8 +12,8 @@ const feedbackSchema = new mongoose.Schema(
     improvableProject: { type: String, required: true },
     improvementDetails: { type: String, required: true },
     additionalMaterials: { type: String, default: "" },
-    userName: { type: String, required: true },
-    userEmail: { type: String, required: true },
+    userName: { type: String, default: "" },
+    userEmail: { type: String, default: "" },
   },
   { timestamps: true }
 );
