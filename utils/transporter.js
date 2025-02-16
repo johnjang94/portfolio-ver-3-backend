@@ -36,7 +36,6 @@ transporter.verify(async (error) => {
 
 const sendEmail = async ({ email, subject, text, warmUp = false }) => {
   if (warmUp) return { message: "SMTP connection warmed up, email not sent." };
-
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
