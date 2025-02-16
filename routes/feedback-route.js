@@ -11,7 +11,6 @@ const submitFeedback = async (req, res) => {
       organization,
       candidateProfileRating,
       candidateDesiredType,
-      candidateLackingFeedback,
       culturalFit,
       likedProject,
       improvableProject,
@@ -31,22 +30,20 @@ Portfolio Feedback Submission
 🏢 Organization: ${organization || "N/A"}
 ⭐ Portfolio Rating: ${candidateProfileRating}
 ${
-  ["average", "poor"].includes(candidateProfileRating)
+  (candidateProfileRating === "average" || candidateProfileRating === "poor") &&
+  candidateDesiredType
     ? `🔍 Candidate Desired Type: ${candidateDesiredType}\n`
     : ""
 }
+${culturalFit ? `🎯 Cultural Fit: ${culturalFit}\n` : ""}
+${likedProject ? `❤️ Liked Project: ${likedProject}\n` : ""}
+${improvableProject ? `🔧 Improvable Project: ${improvableProject}\n` : ""}
+${improvementDetails ? `📝 Improvement Details: ${improvementDetails}\n` : ""}
 ${
-  candidateLackingFeedback
-    ? `💡 Candidate Lacking Feedback: ${candidateLackingFeedback}\n`
-    : ""
+  additionalMaterials ? `📚 Additional Materials: ${additionalMaterials}\n` : ""
 }
-🎯 Cultural Fit: ${culturalFit}
-❤️ Liked Project: ${likedProject}
-🔧 Improvable Project: ${improvableProject}
-📝 Improvement Details: ${improvementDetails}
-📚 Additional Materials: ${additionalMaterials}
-👤 User Name: ${userName}
-📧 User Email: ${userEmail}
+${userName ? `👤 User Name: ${userName}\n` : ""}
+${userEmail ? `📧 User Email: ${userEmail}\n` : ""}
     `;
 
     await transporter.sendMail({
@@ -56,47 +53,64 @@ ${
       text: ownerEmailText,
     });
 
-    const confirmationEmailHtml = `
+    let confirmationEmailHtml = `
     <div style="font-family: Arial, sans-serif; padding: 20px;">
       <p>
-        Thank you for your visit to my website and your feedback on my portfolio, ${userName}.<br>
-        I see that you are a ${professionalRole} ${
-      otherRole ? `(${otherRole})` : ""
-    } at ${organization || "N/A"}.
+        Thank you for visiting my website and providing feedback on my portfolio.
       </p>
-      ${
-        candidateProfileRating === "excellent" ||
-        candidateProfileRating === "good"
-          ? `<p>
-              I am glad to see that my case studies have been able to provide you an adequate amount of information. I hope to hear back from you in near future.
-            </p>`
-          : (candidateProfileRating === "average" ||
-              candidateProfileRating === "poor") &&
-            candidateLackingFeedback
-          ? `<p>
-              Thank you for your opinion. I will definitely consider making changes based on your advice.
-            </p>
-            <p>
-              In addition, I appreciate your time and effort to explain your company's culture and how my work might fit to your culture. In order to be better, I will certainly work harder to improve ${improvableProject} in terms of ${improvementDetails} that you have mentioned.
-            </p>`
-          : `<p>
-              I appreciate your visit to my website. I wish you all the best to find the suitable candidate in your journey.
-            </p>`
-      }
+    `;
+
+    if (
+      candidateProfileRating === "excellent" ||
+      candidateProfileRating === "good"
+    ) {
+      confirmationEmailHtml += `
       <p>
-        Thank you again, ${userName}, for your time to go through my portfolio. I appreciate your effort to help me and I hope that our paths cross again.<br>
+        I'm glad to see that my case studies provided you with the information you needed. I hope we can connect again soon.
+      </p>`;
+    } else if (
+      candidateProfileRating === "average" ||
+      candidateProfileRating === "poor"
+    ) {
+      confirmationEmailHtml += `
+      <p>
+        Thank you for your honest opinion. I will definitely consider making improvements based on your feedback${
+          candidateDesiredType ? " regarding " + candidateDesiredType : ""
+        }.
+      </p>`;
+    } else {
+      confirmationEmailHtml += `
+      <p>
+        I appreciate your feedback and wish you all the best.
+      </p>`;
+    }
+
+    confirmationEmailHtml += userName
+      ? `
+      <p>
+        Thank you again, ${userName}, for taking the time to complete the survey.<br>
         Yours sincerely,<br>
         John
       </p>
-    </div>
-  `;
+      `
+      : `
+      <p>
+        Thank you again for your feedback.<br>
+        Yours sincerely,<br>
+        John
+      </p>
+      `;
 
-    await transporter.sendMail({
-      from: `"Portfolio Feedback" <${process.env.EMAIL_USER}>`,
-      to: userEmail,
-      subject: "Thank you for your feedback!",
-      html: confirmationEmailHtml,
-    });
+    confirmationEmailHtml += `</div>`;
+
+    if (userEmail) {
+      await transporter.sendMail({
+        from: `"Portfolio Feedback" <${process.env.EMAIL_USER}>`,
+        to: userEmail,
+        subject: "Thank you for your feedback!",
+        html: confirmationEmailHtml,
+      });
+    }
 
     res.status(201).json({
       message: "Feedback submitted successfully & emails sent!",

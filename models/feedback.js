@@ -7,7 +7,6 @@ const feedbackSchema = new mongoose.Schema(
     organization: { type: String, default: "" },
     candidateProfileRating: { type: String, required: true },
     candidateDesiredType: { type: String, default: "" },
-    candidateLackingFeedback: { type: String, default: "" },
     culturalFit: { type: String, required: true },
     likedProject: { type: String, required: true },
     improvableProject: { type: String, required: true },
