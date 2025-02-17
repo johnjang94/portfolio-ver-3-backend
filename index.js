@@ -22,23 +22,37 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use(cors({ origin: "*" }));
-app.use(express.json());
+
+// express.json()를 조건부로 적용하여 multipart/form-data 요청에는 영향을 주지 않도록 함.
+app.use((req, res, next) => {
+  const contentType = req.headers["content-type"] || "";
+  if (contentType.includes("multipart/form-data")) {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 
 (async () => {
   const { default: rateLimit } = await import("express-rate-limit");
   const chatRateLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 50 });
   app.use("/api/chat", chatRateLimiter);
+
   app.head("/api/chat", (req, res) => {
     res.status(200).end();
   });
+
   app.use("/api/chat", chatbotRoutes);
   app.use("/api/contact", emailRoutes);
   app.use("/api/feedback", feedbackRoutes);
+
   app.get("/api/health-check", (req, res) => {
     res.status(200).json({ status: "OK", timestamp: new Date() });
   });
+
   const BACKEND_URL =
     process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3000}`;
+
   cron.schedule("*/5 * * * *", async () => {
     console.log(
       "[CRON] Starting keep-alive cycle at",
@@ -50,10 +64,12 @@ app.use(express.json());
         "[CRON] Health-check response status:",
         healthResponse.status
       );
+
       let chatResponse = await fetch(`${BACKEND_URL}/api/chat`, {
         method: "HEAD",
       });
       console.log("[CRON] Chat ping response status:", chatResponse.status);
+
       let emailResponse = await fetch(`${BACKEND_URL}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,10 +84,12 @@ app.use(express.json());
       console.error("[CRON] Error during keep-alive cycle:", error);
     }
   });
+
   app.use((err, req, res, next) =>
     res.status(500).json({ error: "Something went wrong!" })
   );
   app.use((req, res) => res.status(404).json({ error: "Not Found" }));
+
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 })();
