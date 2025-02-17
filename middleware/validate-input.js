@@ -1,5 +1,6 @@
 module.exports = (req, res, next) => {
-  const { name, email, inquiry, message } = req.body;
+  console.log("validateInput req.body:", req.body);
+  const { name, email, Inquiry, Message } = req.body;
 
   if (req.body.warmUp) {
     return res
@@ -7,7 +8,7 @@ module.exports = (req, res, next) => {
       .json({ message: "SMTP connection warmed up, email not sent." });
   }
 
-  if (!name || !email || !inquiry || !message) {
+  if (!name || !email || !Inquiry || !Message) {
     return res.status(400).json({ error: "All fields are required" });
   }
 

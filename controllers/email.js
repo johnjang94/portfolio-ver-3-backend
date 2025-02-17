@@ -4,31 +4,43 @@ const fs = require("fs");
 require("dotenv").config();
 
 exports.sendEmail = async (req, res) => {
+  console.log("Received request body:", req.body);
+  console.log("Received file:", req.file);
+
+  if (
+    !req.body.name ||
+    !req.body.email ||
+    !req.body.Inquiry ||
+    !req.body.Message
+  ) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
   try {
     const {
       name,
       email,
-      jobTitle,
-      otherJobTitle,
-      selfEmployed,
-      organizationType,
-      inquiryTitle,
-      inquiryMessage,
+      Occupation,
+      Other,
+      SelfEmployed,
+      Organization,
+      Inquiry,
+      Message,
     } = req.body;
 
     const imagePath = path.join(__dirname, "../logo-512.png");
     const base64Image = fs.readFileSync(imagePath).toString("base64");
     const imageSrc = `data:image/png;base64,${base64Image}`;
 
-    let occupationInfo = jobTitle;
-    if (jobTitle === "other") {
-      occupationInfo = otherJobTitle;
-      if (otherJobTitle.toLowerCase() === "freelancer" && selfEmployed) {
-        occupationInfo += ` (Self-employed: ${selfEmployed})`;
+    let occupationInfo = Occupation;
+    if (Occupation.toLowerCase() === "other") {
+      occupationInfo = Other;
+      if (Other && Other.toLowerCase() === "freelancer" && SelfEmployed) {
+        occupationInfo += ` (Self-employed: ${SelfEmployed})`;
       }
     }
 
-    const organizationInfo = organizationType;
+    const organizationInfo = Organization;
 
     const visitorEmailHtml = `
       <div style="font-family: Arial; padding: 20px; background: #f4f4f4; border-radius: 10px;">
@@ -42,13 +54,13 @@ exports.sendEmail = async (req, res) => {
             This email confirms the receipt of your inquiry.
           </p>
           <div style="margin-bottom: 1.5rem;">
-            <p style="font-size: 1.125rem; font-weight: bold;">Inquiry Title:</p>
-            <p style="font-size: 1.125rem;">${inquiryTitle}</p>
+            <p style="font-size: 1.125rem; font-weight: bold;">Inquiry:</p>
+            <p style="font-size: 1.125rem;">${Inquiry}</p>
           </div>
           <div style="margin-bottom: 1.5rem;">
             <p style="font-size: 1.125rem; font-weight: bold;">Message:</p>
             <div style="background-color: white; padding: 1.25rem; border-radius: 1rem;">
-              ${inquiryMessage}
+              ${Message}
             </div>
           </div>
           <div style="margin-bottom: 1.5rem;">
@@ -80,16 +92,16 @@ exports.sendEmail = async (req, res) => {
     await transporter.sendMail({
       from: `"Customer Inquiry" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_USER,
-      subject: inquiryTitle,
+      subject: Inquiry,
       html: `
         <div>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Occupation:</strong> ${occupationInfo}</p>
           <p><strong>Organization:</strong> ${organizationInfo}</p>
-          <p><strong>Inquiry Title:</strong> ${inquiryTitle}</p>
+          <p><strong>Inquiry:</strong> ${Inquiry}</p>
           <p><strong>Message:</strong></p>
-          <div>${inquiryMessage}</div>
+          <div>${Message}</div>
         </div>
       `,
       attachments: attachmentOption,
