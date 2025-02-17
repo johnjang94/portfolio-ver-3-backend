@@ -2,12 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cron = require("node-cron");
+const multer = require("multer");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 require("dotenv").config();
 
 const chatbotRoutes = require("./routes/chatbot-route");
-const emailRoutes = require("./routes/email-route");
+const emailRoutes = require("./routes/email-route"); // 기존 emailRoutes 유지
 const feedbackRoutes = require("./routes/feedback-route");
 
 const app = express();
@@ -23,7 +24,9 @@ mongoose
 
 app.use(cors({ origin: "*" }));
 
-// express.json()를 조건부로 적용하여 multipart/form-data 요청에는 영향을 주지 않도록 함.
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 app.use((req, res, next) => {
   const contentType = req.headers["content-type"] || "";
   if (contentType.includes("multipart/form-data")) {
@@ -43,7 +46,7 @@ app.use((req, res, next) => {
   });
 
   app.use("/api/chat", chatbotRoutes);
-  app.use("/api/contact", emailRoutes);
+  app.use("/api/contact", upload.single("file"), emailRoutes); // multer 추가
   app.use("/api/feedback", feedbackRoutes);
 
   app.get("/api/health-check", (req, res) => {
