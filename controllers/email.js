@@ -67,6 +67,15 @@ exports.sendEmail = async (req, res) => {
     </div>
   `;
 
+  let attachmentOption = [];
+  if (req.file) {
+    attachmentOption.push({
+      filename: req.file.originalname,
+      content: req.file.buffer,
+      contentType: req.file.mimetype,
+    });
+  }
+
   try {
     await transporter.sendMail({
       from: `"Customer Inquiry" <${process.env.EMAIL_USER}>`,
@@ -83,6 +92,7 @@ exports.sendEmail = async (req, res) => {
           <div>${inquiryMessage}</div>
         </div>
       `,
+      attachments: attachmentOption,
     });
 
     await transporter.sendMail({
